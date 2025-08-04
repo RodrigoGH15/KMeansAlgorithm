@@ -1,2 +1,2 @@
-# LogRegressionModel
-Logistic regression model for stocks. Looks to predict if you should be long or short in a given equity.
+# KMeansAlgorithm
+Welcome to the ML party
