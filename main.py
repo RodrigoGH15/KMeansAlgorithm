@@ -37,15 +37,11 @@ Date	Stock1	Stock2	Stock3	Stock4
 
 """
 
-# ---
-# Funciones principales
-# ---
-
 
 def _get_stock_data(
     tickers: list[str], start: date, end: date
 ) -> pd.DataFrame | None:
-    # Función helper completamente opcional.
+    # Función helper completamente opcional. Baja retornos de yfinance.
     try:
         df_stocks = yf.download(
             tickers, start=start, end=end, auto_adjust=False
@@ -53,15 +49,14 @@ def _get_stock_data(
     except Exception as e:
         print(f"Error al descargar datos de yfinance: {e}")
         return None
-    if df_stocks is not None:
+    if df_stocks is None:
+        raise ValueError("Check df_stocks for problems.")
+    try:
         prices = cast(pd.DataFrame, df_stocks["Adj Close"])
+    except Exception as e:
+        print(f"No se encontró la columna 'Adj Close'. Revisar datos: {e}")
     else:
-        raise Exception("No se encontró la columna Adj Close. Revisar data.")
-    if prices is not None and not prices.empty:
         return prices
-
-    print("Error: No se encontraron los precios de cierre ajustados.")
-    return None
 
 
 def calculate_features(prices: pd.DataFrame) -> pd.DataFrame:
@@ -110,7 +105,8 @@ def plot_clusters(features: pd.DataFrame) -> None:
     )
     plt.title("Clustering de acciones por perfil de riesgo-retorno")
     plt.grid(True)
-    plt.savefig("clusters_riesgo_retorno.png")
+    # plt.savefig("clusters_riesgo_retorno.png")
+    # Lo usé una vez para guardar los clusters
     plt.show()
 
 
@@ -193,8 +189,9 @@ def main():
     print("Generando visualización de los clusters...")
     plot_clusters(features)
 
-    print("Exportando resultados a 'resultados_clusters.xlsx'...")
-    features.to_excel("resultados_clusters.xlsx")
+    # print("Exportando resultados a 'resultados_clusters.xlsx'...")
+    # features.to_excel("resultados_clusters.xlsx")
+    # Igual que en los casos anteriores, lo usé una vez para guardar todo.
     print("Proceso completado exitosamente.")
 
     """Clusters observados y conclusiones generales:
